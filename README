@@ -80,8 +80,8 @@ To use such types anyway you can either implement the type's `__repr__()`
 method accordingly or provide a custom representation function using the `repr`
 keyword of the `Cache` constructor.
 
-To pass dictionaries to *percache* decorated function, you could wrap them in
-an own dictionary with a suitable `__repr__()` method:
+To pass dictionaries to *percache* decorated functions, you could wrap them in
+an own dictionary type with a suitable `__repr__()` method:
 
     >>> class mydict(dict):
     ...     def __repr__(self):
@@ -92,7 +92,7 @@ an own dictionary with a suitable `__repr__()` method:
     "{'a': 1, 'b': 2, 'c': 3, 'd': 4}"  # good (always same order)
 
 The following example shows how to use a custom representation function to get
-a suitable argument representation `file` objects:
+a suitable argument representation of `file` objects:
 
     >>> def myrepr(arg):
     ...     if isinstance(arg, file):
