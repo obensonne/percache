@@ -39,7 +39,7 @@ As you can see at the missing output after the second invocation,
 is retrieved from the cache.
 *The key feature of this module is that this works across multiple invocations of the Python interpreter.*
 
-A requirement to the results to cache is that they are
+A requirement on the results to cache is that they are
 `pickable <http://docs.python.org/library/pickle.html#what-can-be-pickled-and-unpickled>`_.
 
 Each cache file can be used for any number of differently named
@@ -79,9 +79,6 @@ tuples and combinations of them but it may fail on other types:
     '<__main__.A object at 0xb725bb6c>' # bad (A.a not considered)
     >>> repr(A(35))
     '<__main__.A object at 0xb725bb6c>' # bad (A.a not considered)
-    
-    >>> o = A(35)
-    >>> repr(o)
 
 A *bad* representation is one that is not identically across
 Python invocations (all *bad* examples) or one that does not
@@ -131,15 +128,18 @@ objects:
 Housekeeping
 ------------
 
-Make sure to delete the cache file whenever the behavior of a
-cached function has changed!
+- Don't forget to call the ``close()`` method of a ``Cache`` instance. No
+  resutls are written to disk until this method is called
 
-To prevent the cache from getting larger and larger you can call
-the ``clear()`` method of a ``Cache`` instance. This method's
-``maxage`` keyword specifies a maximum number of seconds passed
-since a cached result has been *used* the last time. Any result not
-used (written or accessed) for ``maxage`` seconds gets removed from
-the cache.
+- Make sure to delete the cache file whenever the behavior of a cached function
+  has changed!
+
+- To prevent the cache from getting larger and larger you can call the
+  ``clear()`` method of a ``Cache`` instance. By default it clears *all*
+  results from the cache. The keyword ``maxage`` my be used to specify a
+  maximum number of seconds passed since a cached result has been *used* the
+  last time. Any result not used (written or accessed) for ``maxage`` seconds
+  gets removed from the cache.
 
 Changes
 =======
