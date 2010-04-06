@@ -23,9 +23,11 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 # OTHER DEALINGS IN THE SOFTWARE.
 
-"""Utility to persistently cache results of callables using decorators."""
+"""Utility to persistently cache results of callables using decorators.
 
-# =============================================================================
+See http://pypi.python.org/pypi/percache for usage instructions and examples.
+
+"""
 
 import hashlib
 from os.path import exists

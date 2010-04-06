@@ -129,7 +129,7 @@ Housekeeping
 ------------
 
 - Don't forget to call the ``close()`` method of a ``Cache`` instance. No
-  resutls are written to disk until this method is called
+  results are written to disk until this method is called
 
 - Make sure to delete the cache file whenever the behavior of a cached function
   has changed!
