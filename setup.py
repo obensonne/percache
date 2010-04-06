@@ -10,7 +10,7 @@ with open(README) as fp:
     longdesc = longdesc.replace("-*- restructuredtext -*-\n", "")
 
 setup(name='percache',
-      version='0.1',
+      version='0.1.1',
       description='Persistently cache results of callables',
       long_description=longdesc,
       classifiers=[

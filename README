@@ -144,6 +144,12 @@ Housekeeping
 Changes
 =======
 
+Version 0.1.1
+-------------
+
+- Fix wrong usage age output of command line interface.
+- Meet half way with pylint.
+
 Version 0.1
 -----------
 
