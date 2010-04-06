@@ -23,7 +23,7 @@ setup(name='percache',
       ],
       author='Oben Sonne',
       author_email='obensonne@googlemail.com',
-      license='Python Software Foundation License',      
+      license='MIT License',
       url='http://bitbucket.org/obensonne/percache',
       py_modules=['percache']
      )
