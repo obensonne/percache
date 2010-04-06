@@ -143,7 +143,7 @@ def _main():
     num, oldest, newest = c._stats()
     print("Number of cached results : %d" % num)
     print("Oldest result usage age  : %s" % age(now - oldest))
-    print("Latest result usage age  : %s" % age(now - oldest))
+    print("Latest result usage age  : %s" % age(now - newest))
 
 if __name__ == '__main__':
     _main()
