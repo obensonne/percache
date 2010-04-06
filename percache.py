@@ -42,10 +42,10 @@ class Cache(object):
         
         The keyword `repr` may specify an alternative representation function
         to be applied to the arguments of callables to cache. The
-        representation function is used to calculate a hash of the arguments.
-        Representation functions need to differentiate argument values
-        sufficiently (for the purpose of the callable) and identically across
-        different invocations of the Python interpreter. The default
+        representation function is used when calculating a hash of the
+        arguments. Representation functions need to differentiate argument
+        values sufficiently (for the purpose of the callable) and identically
+        across different invocations of the Python interpreter. The default
         representation function `repr()` is suitable for basic types, lists,
         tuples and combinations of them as well as for all types which
         implement the `__repr__()` method according to the requirements
