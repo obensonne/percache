@@ -36,6 +36,7 @@ import time
 # =============================================================================
 
 class Cache(object):
+    """Persistent cache for results of callables."""
     
     def __init__(self, fname, repr=repr):
         """Create a new persistent cache using the given file name.
@@ -55,13 +56,13 @@ class Cache(object):
         self.__repr = repr
         self.__cache = shelve.open(fname, protocol=-1)
         
-    def check(self, fn):
+    def check(self, func):
         """Decorator function for caching results of a callable."""
         
         def wrapper(*args, **kwargs):
             """Function wrapping the decorated function."""
             
-            ckey = hashlib.sha1(fn.__name__) # parameter hash
+            ckey = hashlib.sha1(func.__name__) # parameter hash
             for a in args:
                 ckey.update(self.__repr(a))
             for k in sorted(kwargs):
@@ -71,7 +72,7 @@ class Cache(object):
             if ckey in self.__cache:
                 result = self.__cache[ckey]
             else:
-                result = fn(*args, **kwargs)
+                result = func(*args, **kwargs)
                 self.__cache[ckey] = result
             self.__cache["%s:atime" % ckey] = time.time() # access time
             return result
@@ -99,7 +100,7 @@ class Cache(object):
         else:
             self.__cache.clear()
         
-    def _stats(self):
+    def stats(self):
         """Get some statistics about this cache.
         
         Returns a 3-tuple containing the number of cached results as well as
@@ -121,6 +122,7 @@ class Cache(object):
 # =============================================================================
 
 def _main():
+    """Command line functionality."""
 
     def age(s):
         """Pretty-print an age given in seconds."""
@@ -140,7 +142,7 @@ def _main():
 
     c = Cache(sys.argv[1])
     now = time.time()
-    num, oldest, newest = c._stats()
+    num, oldest, newest = c.stats()
     print("Number of cached results : %d" % num)
     print("Oldest result usage age  : %s" % age(now - oldest))
     print("Latest result usage age  : %s" % age(now - newest))
