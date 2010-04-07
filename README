@@ -3,15 +3,17 @@
 percache
 ========
 
-*percache* is a Python module to persistently cache results of
-functions (or callables in general) using decorators.
+*percache* is a Python module to persistently cache results of functions (or
+callables in general) using decorators.
 
-It is somehow similar to the
-`Memoize Example <http://wiki.python.org/moin/PythonDecoratorLibrary#Memoize>`_
-from the Python Decorator Library but with the advantage that
-results are stored *persistently* in a cache file. *percache*
-provides memoization across multiple invocations of the Python
-interpreter.
+It is somehow similar to the `Memoize Example`_ from the Python Decorator
+Library but with the advantage that results are stored *persistently* in a
+cache file. *percache* provides memoization across multiple invocations of the
+Python interpreter.
+
+Install by running ``easy_install percache`` or ``pip install percache``.
+
+.. _Memoize Example: http://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
 
 Example
 -------
@@ -34,16 +36,16 @@ Example
     3
     >>> cache.close() # writes new cached results to disk
 
-As you can see at the missing output after the second invocation,
-``longtask`` has been called once only. The second time the result
-is retrieved from the cache.
-*The key feature of this module is that this works across multiple invocations of the Python interpreter.*
+As you can see at the missing output after the second invocation, ``longtask``
+has been called once only. The second time the result is retrieved from the
+cache.  *The key feature of this module is that this works across multiple
+invocations of the Python interpreter.*
 
-A requirement on the results to cache is that they are
-`pickable <http://docs.python.org/library/pickle.html#what-can-be-pickled-and-unpickled>`_.
+A requirement on the results to cache is that they are `pickable`_.
 
-Each cache file can be used for any number of differently named
-callables.
+.. _pickable: http://docs.python.org/library/pickle.html#what-can-be-pickled-and-unpickled
+
+Each cache file can be used for any number of differently named callables.
 
 Caching details (you should know)
 ---------------------------------
@@ -53,12 +55,11 @@ and arguments is used as a key to store the result in the cache file.
 
 The hash calculation does not work directly with the arguments but with their
 *rerpresentations*, i.e. the string returned by applying ``repr()``. Argument
-representations are supposed to differentiate values
-sufficiently for the purpose of the function but identically across
-multiple invocations of the Python interpreter. By default the
-builtin function ``repr()`` is used to get argument
-representations. This is just perfect for basic types, lists,
-tuples and combinations of them but it may fail on other types:
+representations are supposed to differentiate values sufficiently for the
+purpose of the function but identically across multiple invocations of the
+Python interpreter. By default the builtin function ``repr()`` is used to get
+argument representations. This is just perfect for basic types, lists, tuples
+and combinations of them but it may fail on other types:
 
 ::
 
@@ -80,9 +81,9 @@ tuples and combinations of them but it may fail on other types:
     >>> repr(A(35))
     '<__main__.A object at 0xb725bb6c>' # bad (A.a not considered)
 
-A *bad* representation is one that is not identically across
-Python invocations (all *bad* examples) or one that does not
-differentiate values sufficiently (last 2 *bad* examples).
+A *bad* representation is one that is not identically across Python invocations
+(all *bad* examples) or one that does not differentiate values sufficiently
+(last 2 *bad* examples).
 
 To use such types anyway you can either
 
@@ -93,9 +94,8 @@ To use such types anyway you can either
 Implement the ``__repr__()`` method
 '''''''''''''''''''''''''''''''''''
 
-To pass dictionaries to *percache* decorated functions, you could
-wrap them in an own dictionary type with a suitable ``__repr__()``
-method:
+To pass dictionaries to *percache* decorated functions, you could wrap them in
+an own dictionary type with a suitable ``__repr__()`` method:
 
 ::
 
@@ -110,9 +110,8 @@ method:
 Provide a custom ``repr()`` function
 ''''''''''''''''''''''''''''''''''''
 
-The following example shows how to use a custom representation
-function to get a suitable argument representation of ``file``
-objects:
+The following example shows how to use a custom representation function to get
+a suitable argument representation of ``file`` objects:
 
 ::
 
