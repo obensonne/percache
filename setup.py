@@ -3,11 +3,10 @@ from __future__ import with_statement
 from distutils.core import setup
 import os.path
 
-README = os.path.join(os.path.dirname(__file__), 'README')
+README = os.path.join(os.path.dirname(__file__), 'README.rst')
 
 with open(README) as fp:
     longdesc = fp.read()
-    longdesc = longdesc.replace("-*- restructuredtext -*-\n", "")
 
 setup(name='percache',
       version='0.1.1',
