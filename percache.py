@@ -65,7 +65,9 @@ class Cache(object):
         """
         self.__repr = repr
         self.__cache = shelve.open(fname, protocol=-1)
-        
+    def __del__(self):
+        """Automatically close the cache"""
+        self.__cache.close()
     def check(self, func):
         """Decorator function for caching results of a callable."""
         
@@ -85,6 +87,7 @@ class Cache(object):
                 result = func(*args, **kwargs)
                 self.__cache[ckey] = result
             self.__cache["%s:atime" % ckey] = time.time() # access time
+            self.__cache.sync()
             return result
             
         return wrapper
