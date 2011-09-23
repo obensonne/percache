@@ -50,9 +50,9 @@ backends may be used if they are given as dictionary-like objects with a
 ``close()`` and ``sync()`` method::
 
     >>> class FooCache(dict):
-    ...     def sync():
+    ...     def sync(self):
     ...         ...
-    ...     def close():
+    ...     def close(self):
     ...         ...
     >>> fc = FooCache()
     >>> cache = percache.Cache(fc, livesync=True)
