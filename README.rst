@@ -6,7 +6,7 @@ callables in general) using decorators.
 
 It is somehow similar to the `Memoize Example`_ from the Python Decorator
 Library but with the advantage that results are stored *persistently* in a
-cache file. *percache* provides memoization across multiple invocations of the
+cache. *percache* provides memoization across multiple invocations of the
 Python interpreter.
 
 Install by running ``easy_install percache`` or ``pip install percache``.
@@ -44,6 +44,26 @@ A requirement on the results to cache is that they are `pickable`_.
 .. _pickable: http://docs.python.org/library/pickle.html#what-can-be-pickled-and-unpickled
 
 Each cache file can be used for any number of differently named callables.
+
+By default *percache* uses a `shelve_` as its cache backend. Alternative
+backends may be used if they are given as dictionary-like objects with a
+``close()`` and ``sync()`` method::
+
+    >>> class FooCache(dict):
+    ...     def sync():
+    ...         ...
+    ...     def close():
+    ...         ...
+    >>> fc = FooCache()
+    >>> cache = percache.Cache(fc, livesync=True)
+
+In this example a cache is created in live-sync mode, i.e. results
+*immediately* are stored permanently. Normally this happens not until a cache's
+``close()`` method has been called or until it gets `finalized`_. Note that the
+live-sync mode may slow down your percache-decorated functions (though it
+reduces the risk of "loosing" results).
+
+.. _finalized: http://docs.python.org/reference/datamodel.html#object.__del__
 
 Caching details (you should know)
 ---------------------------------
@@ -125,9 +145,6 @@ a suitable argument representation of ``file`` objects:
 Housekeeping
 ------------
 
-- Don't forget to call the ``close()`` method of a ``Cache`` instance. No
-  results are written to disk until this method is called
-
 - Make sure to delete the cache file whenever the behavior of a cached function
   has changed!
 
@@ -140,6 +157,15 @@ Housekeeping
 
 Changes
 =======
+
+Version 0.2 (in development)
+----------------------------
+
+- Automatically close (i.e. sync) the cache on finalization.
+- Optionally sync the cache on each change.
+- Support for alternative backends (others than `shelve`_).
+
+.. _shelve: http://docs.python.org/library/shelve.html
 
 Version 0.1.1
 -------------
