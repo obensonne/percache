@@ -48,7 +48,7 @@ import time
 class Cache(object):
     """Persistent cache for results of callables."""
     
-    def __init__(self, fname, repr=repr):
+    def __init__(self, backend, repr=repr):
         """Create a new persistent cache using the given file name.
         
         The keyword `repr` may specify an alternative representation function
@@ -60,11 +60,19 @@ class Cache(object):
         representation function `repr()` is suitable for basic types, lists,
         tuples and combinations of them as well as for all types which
         implement the `__repr__()` method according to the requirements
-        mentioned above.
+        mentioned above.  `backend` allows you to specify an alternate backend
+        (e.g. shove or redis).  If it is a string, the backend will be a
+        `shelve` with `backend` as the file.  Otherwise, it will be used
+        directly -- backends must support basic mapping operations and a `close()`
+        method.
         
         """
         self.__repr = repr
-        self.__cache = shelve.open(fname, protocol=-1)
+        if isinstance(backend, basestring):
+            # use built-in shelve with backend as the filename
+            self.__cache = shelve.open(backend, protocol=-1)
+        else:
+            self.__cache = backend
         
     def check(self, func):
         """Decorator function for caching results of a callable."""
