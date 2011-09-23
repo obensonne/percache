@@ -97,6 +97,10 @@ class Cache(object):
             
         return wrapper
 
+    def __del__(self):
+        """Closes the cache upon finalization."""
+        self.close()
+
     def close(self):
         """Close cache and save it to disk."""
         
