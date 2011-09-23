@@ -93,6 +93,7 @@ class Cache(object):
                 result = func(*args, **kwargs)
                 self.__cache[ckey] = result
             self.__cache["%s:atime" % ckey] = time.time() # access time
+            self.__cache.sync()
             return result
             
         return wrapper
