@@ -69,13 +69,13 @@ class TestCase(unittest.TestCase):
         
         c = Cache(TESTFILE)
         
-        @c.check
+        @c
         def f1(a, b):
             print("computing new result")
             self.frun = True
             return a
 
-        @c.check
+        @c
         def f2(a, b):
             print("computing new result")
             self.frun = True
@@ -97,13 +97,13 @@ class TestCase(unittest.TestCase):
 
         c = Cache(TESTFILE)
 
-        @c.check
+        @c
         def f1(a, b):
             print("computing new result")
             self.frun = True
             return a
 
-        @c.check
+        @c
         def f2(a, b):
             print("computing new result")
             self.frun = True
@@ -125,7 +125,7 @@ class TestCase(unittest.TestCase):
 
         c = Cache(TESTFILE)
         
-        @c.check
+        @c
         def f3(s):
             print("computing new result")
             self.frun = True
@@ -146,7 +146,7 @@ class TestCase(unittest.TestCase):
 
         c = Cache(TESTFILE)
         
-        @c.check
+        @c
         def f5(a):
             print("computing new result")
             self.frun = True
@@ -168,7 +168,7 @@ class TestCase(unittest.TestCase):
         
         c = Cache(TESTFILE)
         
-        @c.check
+        @c
         def f6(a, x=1, y=2, z=3):
             print("computing new result")
             self.frun = True
@@ -196,7 +196,7 @@ class TestCase(unittest.TestCase):
             def __init__(self, a):
                 self.a = a
         
-        @c.check
+        @c
         def f7(a):
             print("computing new result")
             self.frun = True
@@ -223,7 +223,7 @@ class TestCase(unittest.TestCase):
         
         class X(object): pass
         
-        @c.check
+        @c
         def f8(a):
             print("computing new result")
             self.frun = True
@@ -237,7 +237,105 @@ class TestCase(unittest.TestCase):
 
         c.close()
 
+    def test_check(self):
+        """Test if old `check` interface still works."""
+
+        c = Cache(TESTFILE)
+
+        @c.check
+        def f1(a, b):
+            print("computing new result")
+            self.frun = True
+            return a
+
+        @c.check
+        def f2(a, b):
+            print("computing new result")
+            self.frun = True
+            return a
+
+        self.call(f1, "f1", (1,2), {}, 1, False)
+        self.call(f1, "f1", (1,2), {}, 1, True)
+        self.call(f1, "f1", (1,2L), {}, 1, False)
+        self.call(f1, "f1", (1,3), {}, 1, False)
+        self.call(f2, "f2", (1,3), {}, 1, False)
+        self.call(f2, "f2", (1,3), {}, 1, True)
+        self.call(f2, "f2", (1.1,0.1), {}, 1.1, False)
+        self.call(f2, "f2", (1.1,0.1), {}, 1.1, True)
+
+        c.close()
+
+    def test_alternative_backend(self):
+        """Test alternative backend and live-sync mode."""
+
+        class Backend(dict):
+            """Dummy backend."""
+            closed = False
+            synced = False
+            def close(self):
+                self.closed = True
+            def sync(self):
+                self.synced = True
+
+        b = Backend()
+        c = Cache(b, livesync=True)
+
+        @c
+        def f1(a, b):
+            print("computing new result")
+            self.frun = True
+            return a
+
+        @c
+        def f2(a, b):
+            print("computing new result")
+            self.frun = True
+            return a
+
+        self.call(f1, "f1", (1,2), {}, 1, False)
+        self.call(f1, "f1", (1,2), {}, 1, True)
+        self.call(f1, "f1", (1,2L), {}, 1, False)
+        self.call(f1, "f1", (1,3), {}, 1, False)
+        self.call(f2, "f2", (1,3), {}, 1, False)
+        self.call(f2, "f2", (1,3), {}, 1, True)
+        self.call(f2, "f2", (1.1,0.1), {}, 1.1, False)
+        self.call(f2, "f2", (1.1,0.1), {}, 1.1, True)
+
+        self.assertTrue(b.synced)
+        self.assertFalse(b.closed)
+        c.close()
+        self.assertTrue(b.closed)
+
+        # now without live-sync
+
+        b = Backend()
+        c = Cache(b, livesync=False)
+
+        @c
+        def f3(a, b):
+            print("computing new result")
+            self.frun = True
+            return a
+
+        @c
+        def f4(a, b):
+            print("computing new result")
+            self.frun = True
+            return a
+
+        self.call(f3, "f1", (1,2), {}, 1, False)
+        self.call(f3, "f1", (1,2), {}, 1, True)
+        self.call(f3, "f1", (1,2L), {}, 1, False)
+        self.call(f3, "f1", (1,3), {}, 1, False)
+        self.call(f4, "f2", (1,3), {}, 1, False)
+        self.call(f4, "f2", (1,3), {}, 1, True)
+        self.call(f4, "f2", (1.1,0.1), {}, 1.1, False)
+        self.call(f4, "f2", (1.1,0.1), {}, 1.1, True)
+
+        self.assertFalse(b.synced)
+        c.close()
+
 if __name__ == '__main__':
 
     unittest.main()
-    
+
