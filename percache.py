@@ -78,13 +78,9 @@ class Cache(object):
             self.__cache = shelve.open(backend, protocol=-1)
         else:
             self.__cache = backend
-        
-    def __del__(self):
-        """Closes the cache upon finalization."""
+        self.check = self.__call__ # support old decorator interface
 
-        self.close()
-
-    def check(self, func):
+    def __call__(self, func):
         """Decorator function for caching results of a callable."""
         
         def wrapper(*args, **kwargs):
@@ -108,6 +104,11 @@ class Cache(object):
             return result
             
         return wrapper
+
+    def __del__(self):
+        """Closes the cache upon finalization."""
+
+        self.close()
 
     def close(self):
         """Close cache and save it to the backend."""

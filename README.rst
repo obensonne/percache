@@ -21,7 +21,7 @@ Example
     >>> import percache    
     >>> cache = percache.Cache("/tmp/my-cache")
     >>>
-    >>> @cache.check
+    >>> @cache
     ... def longtask(a, b):
     ...     print("running a long task")
     ...     return a + b
@@ -164,6 +164,8 @@ Version 0.2 (in development)
 - Automatically close (i.e. sync) the cache on finalization.
 - Optionally sync the cache on each change.
 - Support for alternative backends (others than `shelve`_).
+- Cache object are callable now, which makes the explicit ``check()`` method
+  obsolete (though the old interface is still supported).
 
 .. _shelve: http://docs.python.org/library/shelve.html
 
