@@ -48,32 +48,42 @@ import time
 class Cache(object):
     """Persistent cache for results of callables."""
     
-    def __init__(self, backend, repr=repr):
-        """Create a new persistent cache using the given file name.
+    def __init__(self, backend, repr=repr, livesync=False):
+        """Create a new persistent cache using the given backend.
+
+	If backend is a string, it is interpreted as a filename and a Python
+	shelve is used as the backend. Otherwise it is interpreted as a
+	mapping-like object with a `close()` and a `sync()`  method. This
+	allows to use alternative backends like *shove* or *redis*.
+
+	The keyword `repr` may specify an alternative representation function
+	to be applied to the arguments of callables to cache. The
+	representation function is used when calculating a hash of the
+	arguments. Representation functions need to differentiate argument
+	values sufficiently (for the purpose of the callable) and identically
+	across different invocations of the Python interpreter. The default
+	representation function `repr()` is suitable for basic types, lists,
+	tuples and combinations of them as well as for all types which
+	implement the `__repr__()` method according to the requirements
+	mentioned above.
         
-        The keyword `repr` may specify an alternative representation function
-        to be applied to the arguments of callables to cache. The
-        representation function is used when calculating a hash of the
-        arguments. Representation functions need to differentiate argument
-        values sufficiently (for the purpose of the callable) and identically
-        across different invocations of the Python interpreter. The default
-        representation function `repr()` is suitable for basic types, lists,
-        tuples and combinations of them as well as for all types which
-        implement the `__repr__()` method according to the requirements
-        mentioned above.  `backend` allows you to specify an alternate backend
-        (e.g. shove or redis).  If it is a string, the backend will be a
-        `shelve` with `backend` as the file.  Otherwise, it will be used
-        directly -- backends must support basic mapping operations and a `close()`
-        method.
-        
+        Normally changes are only written to the cache when it is closed or
+	finalized. If `livesync` is `True`, the cache is written to the backend
+	whenever it changes.
+
         """
+        self.__livesync = livesync
         self.__repr = repr
         if isinstance(backend, basestring):
-            # use built-in shelve with backend as the filename
             self.__cache = shelve.open(backend, protocol=-1)
         else:
             self.__cache = backend
         
+    def __del__(self):
+        """Closes the cache upon finalization."""
+
+        self.close()
+
     def check(self, func):
         """Decorator function for caching results of a callable."""
         
@@ -93,17 +103,14 @@ class Cache(object):
                 result = func(*args, **kwargs)
                 self.__cache[ckey] = result
             self.__cache["%s:atime" % ckey] = time.time() # access time
-            self.__cache.sync()
+            if self.__livesync:
+                self.__cache.sync()
             return result
             
         return wrapper
 
-    def __del__(self):
-        """Closes the cache upon finalization."""
-        self.close()
-
     def close(self):
-        """Close cache and save it to disk."""
+        """Close cache and save it to the backend."""
         
         self.__cache.close()
         
