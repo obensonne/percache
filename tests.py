@@ -45,17 +45,17 @@ TESTFILE = os.path.join(tempfile.gettempdir(), "percache.tests")
 class TestCase(unittest.TestCase):
 
     def __init__(self, *args):
-    
+
         if os.path.exists(TESTFILE):
             os.remove(TESTFILE)
         super(TestCase, self).__init__(*args)
-    
+
     def setUp(self):
         unittest.TestCase.setUp(self)
-        
+
     def tearDown(self):
         unittest.TestCase.tearDown(self)
-        
+
     def call(self, fn, name, args, kwargs, result, cached):
         expstr = "expecting %s result" % (cached and "cached" or "new")
         print("calling %s(%s | %s) (%s)" % (name, args, kwargs, expstr))
@@ -65,10 +65,10 @@ class TestCase(unittest.TestCase):
         self.assertTrue(result == r)
 
     def test_1(self):
-        """Test differentiation of basic numeric arguments.""" 
-        
+        """Test differentiation of basic numeric arguments."""
+
         c = Cache(TESTFILE)
-        
+
         @c
         def f1(a, b):
             print("computing new result")
@@ -80,7 +80,7 @@ class TestCase(unittest.TestCase):
             print("computing new result")
             self.frun = True
             return a
-        
+
         self.call(f1, "f1", (1,2), {}, 1, False)
         self.call(f1, "f1", (1,2), {}, 1, True)
         self.call(f1, "f1", (1,2L), {}, 1, False)
@@ -108,7 +108,7 @@ class TestCase(unittest.TestCase):
             print("computing new result")
             self.frun = True
             return a
-        
+
         c = Cache(TESTFILE)
 
         self.call(f1, "f1", (1,2), {}, 1, True)
@@ -117,14 +117,14 @@ class TestCase(unittest.TestCase):
         self.call(f2, "f2", (1,3), {}, 1, True)
         self.call(f2, "f2", ("2",3), {}, "2", False)
         self.call(f2, "f2", ("2",3), {}, "2", True)
-        
+
         c.close()
-        
+
     def test_3(self):
         """Test differentiation of normal and unicode strings."""
 
         c = Cache(TESTFILE)
-        
+
         @c
         def f3(s):
             print("computing new result")
@@ -140,12 +140,12 @@ class TestCase(unittest.TestCase):
 
     def test_4(self):
         """Free"""
-        
+
     def test_5(self):
         """Test clearing of old cached results."""
 
         c = Cache(TESTFILE)
-        
+
         @c
         def f5(a):
             print("computing new result")
@@ -165,9 +165,9 @@ class TestCase(unittest.TestCase):
 
     def test_6(self):
         """Test keyword arguments."""
-        
+
         c = Cache(TESTFILE)
-        
+
         @c
         def f6(a, x=1, y=2, z=3):
             print("computing new result")
@@ -186,7 +186,7 @@ class TestCase(unittest.TestCase):
         """Test overridden __repr__ method."""
 
         c = Cache(TESTFILE)
-        
+
         class X(object):
             def __init__(self, a):
                 self.a = a
@@ -195,7 +195,7 @@ class TestCase(unittest.TestCase):
         class Y(object):
             def __init__(self, a):
                 self.a = a
-        
+
         @c
         def f7(a):
             print("computing new result")
@@ -205,9 +205,9 @@ class TestCase(unittest.TestCase):
         self.call(f7, "f7", (X(1),), {}, 0, False)
         self.call(f7, "f7", (X(1),), {}, 0, True)
         self.call(f7, "f7", (X(2),), {}, 0, False)
-        
+
         y1, y2 = Y(1), Y(1)
-        
+
         self.call(f7, "f7", (y1,), {}, 0, False)
         self.call(f7, "f7", (y2,), {}, 0, False) # bad __repr__ method
 
@@ -220,9 +220,9 @@ class TestCase(unittest.TestCase):
             return "foobar"
 
         c = Cache(TESTFILE, repr=myrepr)
-        
+
         class X(object): pass
-        
+
         @c
         def f8(a):
             print("computing new result")

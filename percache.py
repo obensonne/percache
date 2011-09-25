@@ -47,7 +47,7 @@ import time
 
 class Cache(object):
     """Persistent cache for results of callables."""
-    
+
     def __init__(self, backend, repr=repr, livesync=False):
         """Create a new persistent cache using the given backend.
 
@@ -66,7 +66,7 @@ class Cache(object):
 	tuples and combinations of them as well as for all types which
 	implement the `__repr__()` method according to the requirements
 	mentioned above.
-        
+
         Normally changes are only written to the cache when it is closed or
 	finalized. If `livesync` is `True`, the cache is written to the backend
 	whenever it changes.
@@ -82,17 +82,17 @@ class Cache(object):
 
     def __call__(self, func):
         """Decorator function for caching results of a callable."""
-        
+
         def wrapper(*args, **kwargs):
             """Function wrapping the decorated function."""
-            
+
             ckey = hashlib.sha1(func.__name__) # parameter hash
             for a in args:
                 ckey.update(self.__repr(a))
             for k in sorted(kwargs):
                 ckey.update("%s:%s" % (k, self.__repr(kwargs[k])))
             ckey = ckey.hexdigest()
-            
+
             if ckey in self.__cache:
                 result = self.__cache[ckey]
             else:
@@ -102,7 +102,7 @@ class Cache(object):
             if self.__livesync:
                 self.__cache.sync()
             return result
-            
+
         return wrapper
 
     def __del__(self):
@@ -112,9 +112,9 @@ class Cache(object):
 
     def close(self):
         """Close cache and save it to the backend."""
-        
+
         self.__cache.close()
-        
+
     def clear(self, maxage=0):
         """Clear all cached results or those not used for `maxage` seconds."""
 
@@ -125,18 +125,18 @@ class Cache(object):
                 if key.endswith(":atime") and self.__cache[key] < bigbang:
                     outdated.append(key)
                     outdated.append(key.rsplit(":", 1)[0])
-    
+
             for key in outdated:
                 del self.__cache[key]
         else:
             self.__cache.clear()
-        
+
     def stats(self):
         """Get some statistics about this cache.
-        
+
         Returns a 3-tuple containing the number of cached results as well as
         the oldest and most recent result usage times (in seconds since epoch).
-          
+
         """
         num = 0
         oldest = time.time()
@@ -157,7 +157,7 @@ def _main():
 
     def age(s):
         """Pretty-print an age given in seconds."""
-        
+
         m, h, d = s // 60, s // 3600, s // 86400
         for val, unit in ((d, "d"), (h, "h"), (m, "m"), (s, "s")):
             if val > 1 or unit == "s":
