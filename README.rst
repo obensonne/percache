@@ -1,5 +1,6 @@
+===============================================================================
 percache
-========
+===============================================================================
 
 *percache* is a Python module to persistently cache results of functions (or
 callables in general) using decorators.
@@ -13,23 +14,24 @@ Install by running ``easy_install percache`` or ``pip install percache``.
 
 .. _Memoize Example: http://wiki.python.org/moin/PythonDecoratorLibrary#Memoize
 
+-------------------------------------------------------------------------------
 Example
--------
+-------------------------------------------------------------------------------
 
 ::
 
-    >>> import percache    
+    >>> import percache
     >>> cache = percache.Cache("/tmp/my-cache")
     >>>
     >>> @cache
     ... def longtask(a, b):
     ...     print("running a long task")
     ...     return a + b
-    ... 
+    ...
     >>> longtask(1, 2)
     running a long task
     3
-    >>> 
+    >>>
     >>> longtask(1, 2)
     3
     >>> cache.close() # writes new cached results to disk
@@ -45,8 +47,11 @@ A requirement on the results to cache is that they are `pickable`_.
 
 Each cache file can be used for any number of differently named callables.
 
-By default *percache* uses a `shelve_` as its cache backend. Alternative
-backends may be used if they are given as dictionary-like objects with a
+Alternative back-ends and live synchronization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default *percache* uses a `shelve`_ as its cache back-end. Alternative
+back-ends may be used if they are given as dictionary-like objects with a
 ``close()`` and ``sync()`` method::
 
     >>> class FooCache(dict):
@@ -65,17 +70,18 @@ reduces the risk of "loosing" results).
 
 .. _finalized: http://docs.python.org/reference/datamodel.html#object.__del__
 
+-------------------------------------------------------------------------------
 Caching details (you should know)
----------------------------------
+-------------------------------------------------------------------------------
 
 When caching the result of a callable, a SHA1 hash based on the callable's name
 and arguments is used as a key to store the result in the cache file.
 
 The hash calculation does not work directly with the arguments but with their
-*rerpresentations*, i.e. the string returned by applying ``repr()``. Argument
+*representations*, i.e. the string returned by applying ``repr()``. Argument
 representations are supposed to differentiate values sufficiently for the
 purpose of the function but identically across multiple invocations of the
-Python interpreter. By default the builtin function ``repr()`` is used to get
+Python interpreter. By default the built-in function ``repr()`` is used to get
 argument representations. This is just perfect for basic types, lists, tuples
 and combinations of them but it may fail on other types:
 
@@ -93,7 +99,7 @@ and combinations of them but it may fail on other types:
     >>> class A(object):
     ...     def __init__(self, a):
     ...         self.a = a
-    ... 
+    ...
     >>> repr(A(36))
     '<__main__.A object at 0xb725bb6c>' # bad (A.a not considered)
     >>> repr(A(35))
@@ -110,7 +116,7 @@ To use such types anyway you can either
    ``Cache`` constructor.
 
 Implement the ``__repr__()`` method
-'''''''''''''''''''''''''''''''''''
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To pass dictionaries to *percache* decorated functions, you could wrap them in
 an own dictionary type with a suitable ``__repr__()`` method:
@@ -121,12 +127,12 @@ an own dictionary type with a suitable ``__repr__()`` method:
     ...     def __repr__(self):
     ...         items = ["%r: %r" % (k, self[k]) for k in sorted(self)]
     ...         return "{%s}" % ", ".join(items)
-    ... 
+    ...
     >>> repr(mydict({"a":1,"b":2,"d":4,"c":3}))
     "{'a': 1, 'b': 2, 'c': 3, 'd': 4}"  # good (always same order)
 
 Provide a custom ``repr()`` function
-''''''''''''''''''''''''''''''''''''
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following example shows how to use a custom representation function to get
 a suitable argument representation of ``file`` objects:
@@ -141,9 +147,11 @@ a suitable argument representation of ``file`` objects:
     ...         return repr(arg)
     ...
     >>> cache = percache.Cache("/some/path", repr=myrepr)
-    
+
+-------------------------------------------------------------------------------
 Housekeeping
-------------
+-------------------------------------------------------------------------------
+
 
 - Make sure to delete the cache file whenever the behavior of a cached function
   has changed!
@@ -155,27 +163,32 @@ Housekeeping
   last time. Any result not used (written or accessed) for ``maxage`` seconds
   gets removed from the cache.
 
+===============================================================================
 Changes
-=======
+===============================================================================
 
+-------------------------------------------------------------------------------
 Version 0.2 (in development)
-----------------------------
+-------------------------------------------------------------------------------
 
 - Automatically close (i.e. sync) the cache on finalization.
 - Optionally sync the cache on each change.
-- Support for alternative backends (others than `shelve`_).
+- Support for alternative back-ends (others than `shelve`_).
 - Cache object are callable now, which makes the explicit ``check()`` method
   obsolete (though the old interface is still supported).
 
 .. _shelve: http://docs.python.org/library/shelve.html
 
+-------------------------------------------------------------------------------
 Version 0.1.1
--------------
+-------------------------------------------------------------------------------
 
 - Fix wrong usage age output of command line interface.
 - Meet half way with pylint.
 
+-------------------------------------------------------------------------------
 Version 0.1
------------
+-------------------------------------------------------------------------------
 
 - Initial release
+
