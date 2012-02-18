@@ -9,7 +9,7 @@ with open(README) as fp:
     longdesc = fp.read()
 
 setup(name='percache',
-      version='0.2',
+      version='0.2.1',
       description='Persistently cache results of callables',
       long_description=longdesc,
       classifiers=[
