@@ -1,12 +1,8 @@
-# temporary and build files
-*~
 *.pyc
-build/
-dist/
-
-# IDE files:
-.settings
+*~
 .project
 .pydevproject
-
-
+.settings
+build
+dist
+MANIFEST

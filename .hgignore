@@ -1,8 +1,10 @@
-\.pyc$
-~$
-\.project
-\.pydevproject
-\.settings
-^build
-^dist
-^MANIFEST$
+syntax: glob
+
+*.pyc
+*~
+.project
+.pydevproject
+.settings
+build
+dist
+MANIFEST
