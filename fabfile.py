@@ -90,7 +90,7 @@ def release(version):
     local("rm -rf %s" % os.path.join(ROOT, "build"))
     local("rm -rf %s" % os.path.join(ROOT, "dist"))
 
-    local("bin/buildout setup %s clean build sdist" % ROOT) # test build
+    local("python setup.py clean build sdist") # test build
 
     local("hg tag %s" % version)
 
