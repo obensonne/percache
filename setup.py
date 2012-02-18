@@ -5,11 +5,13 @@ import os.path
 
 README = os.path.join(os.path.dirname(__file__), 'README.rst')
 
+version = '0.2.1'
+
 with open(README) as fp:
     longdesc = fp.read()
 
 setup(name='percache',
-      version='0.2.1',
+      version=version,
       description='Persistently cache results of callables',
       long_description=longdesc,
       classifiers=[
